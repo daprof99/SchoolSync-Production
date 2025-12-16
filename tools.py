@@ -20,6 +20,14 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
 
+if not SUPABASE_URL or not SUPABASE_KEY:
+    # Print error but don't crash distinctively yet - let the app handling catch it or crash with clear message
+    print("❌ CRITICAL ERROR (tools.py): SUPABASE_URL and SUPABASE_KEY must be set.")
+    # We allow it to continue to None/fail so that other imports might verify? 
+    # No, tools.py is a dependency. If it fails, everything fails.
+    # But clean fail is better.
+    raise ValueError("❌ CRITICAL ERROR: SUPABASE_URL and SUPABASE_KEY missing in environment variables.")
+
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 PENDING_TRANSACTION = {}
 CONVERSATION_HISTORY = {}  # {phone: [messages...]}
