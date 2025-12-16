@@ -496,10 +496,10 @@ def check_events_tools(state):
     return {"messages": ["Check events logic."]}
 
 
-# Placeholders for other tools to prevent import errors in main
+# Placeholders for other tools to prevent import errors if agent.py requests them
 def check_admissions_tools(state): return {"messages": ["Admissions module off."]}
-def check_results_tools(state): return {"messages": ["Results module off."]}
+def check_results_tools(state): return {"messages": ["Results module off."]} # Used if 'Results' logic falls back to simple
 def check_liaison_tools(state): return {"messages": ["Info module off."]}
 def check_notifications_tools(state): return {"messages": ["Notifications off."]}
-def check_results_tools_enhanced(state): return {"messages": ["Enhanced Results off."]}
-def check_bursary_tools_enhanced(state): return check_bursary_tools(state) # Alias
+# check_results_tools_enhanced is ALREADY defined above (Line 358). Do not redefine.
+# check_bursary_tools_enhanced is ALREADY defined above (Line 410). Do not redefine.
