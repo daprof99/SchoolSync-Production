@@ -1,0 +1,16 @@
+👋 **Hello! I'm SchoolSync.**
+Your AI School Administrator.
+
+**Quick Commands:**
+🗣️ *'CHECK ST-001 Surname'* - Check fees
+🗣️ *'RESULTS ST-001 Surname'* - View grades
+🗣️ *'When is the next meeting?'* - Events
+🗣️ *'MESSAGE TEACHER ...'* - Contact teacher
+
+**Or choose a category:**
+1️⃣ Admissions
+2️⃣ Bursary (Fees & Payments)
+3️⃣ Results &Grades
+4️⃣ Events & Calendar
+5️⃣ Message Teacher
+6️⃣ School Information

@@ -1,0 +1,27 @@
+{
+    "Prince Dao College": {
+        "classes": [
+            "JSS1",
+            "JSS2",
+            "JSS3",
+            "SSS1",
+            "SSS2",
+            "SSS3"
+        ]
+    },
+    "Aptitude nursery and primary school": {
+        "classes": [
+            "Creche",
+            "Playgroup",
+            "Nursery 1",
+            "Nursery 2",
+            "Kindergarten",
+            "Basic 1",
+            "Basic 2",
+            "Basic 3",
+            "Basic 4",
+            "Basic 5",
+            "Basic 6"
+        ]
+    }
+}

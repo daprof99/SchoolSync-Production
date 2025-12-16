@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Event - {{ school_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+
+<body>
+    <div class="center-screen">
+        <div class="glass-panel container-narrow">
+            <h1 style="text-align: center;">📅 Add School Event</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="form-group">
+                    <label>Event Title</label>
+                    <input type="text" name="title" placeholder="e.g. PTA Meeting" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Time</label>
+                    <input type="time" name="time" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Type</label>
+                    <select name="type" id="eventType" onchange="toggleCustomType()">
+                        <option value="PTA">PTA Meeting</option>
+                        <option value="Academic">Academic (Exam/Test)</option>
+                        <option value="Sports">Sports / Extracurricular</option>
+                        <option value="Holiday">Holiday / Break</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="customTypeDiv" style="display: none;">
+                    <label>Specify Event Type</label>
+                    <input type="text" name="custom_type" placeholder="e.g. Excursion, cultural day">
+                </div>
+
+                <script>
+                    function toggleCustomType() {
+                        const select = document.getElementById('eventType');
+                        const customDiv = document.getElementById('customTypeDiv');
+                        if (select.value === 'Others') {
+                            customDiv.style.display = 'block';
+                            customDiv.querySelector('input').required = true;
+                        } else {
+                            customDiv.style.display = 'none';
+                            customDiv.querySelector('input').required = false;
+                        }
+                    }
+                </script>
+
+                <button type="submit" class="btn btn-primary">Add Event</button>
+            </form>
+
+            <a href="/dashboard/{{ school_id }}" class="back-link">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+
+</html>

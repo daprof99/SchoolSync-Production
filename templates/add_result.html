@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Result - {{ school_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+
+<body>
+    <div class="center-screen">
+        <div class="glass-panel container-narrow">
+            <h1 style="text-align: center;">📝 Add Single Result</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="form-group">
+                    <label>Student ID</label>
+                    <input type="text" name="student_id" placeholder="e.g. ST-001" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" name="subject" placeholder="e.g. Mathematics" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Score (0-100)</label>
+                    <input type="number" name="score" min="0" max="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Grade</label>
+                    <select name="grade" required>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Term</label>
+                    <select name="term" required>
+                        <option value="1st">1st Term</option>
+                        <option value="2nd">2nd Term</option>
+                        <option value="3rd">3rd Term</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Session</label>
+                    <input type="text" name="session" value="2024/2025" required>
+                </div>
+
+                <button type="submit" class="btn btn-success">Save Result</button>
+            </form>
+
+            <a href="/dashboard/{{ school_id }}" class="back-link">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+
+</html>

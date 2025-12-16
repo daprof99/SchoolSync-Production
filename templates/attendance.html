@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance - {{ school_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <style>
+        .attendance-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 800px) {
+            .attendance-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .log-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .time-badge {
+            font-family: monospace;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="center-screen" style="align-items: flex-start; padding-top: 40px;">
+        <div class="attendance-container" style="width: 100%; max-width: 1000px;">
+
+            <h1>📍 Mark Arrival</h1>
+            <p class="subtitle">Quickly clock students in.</p>
+
+            <!-- Mode View -->
+            <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                <a href="?mode=scan" class="btn" style="background: rgba(255,255,255,0.05);">Scanner Mode</a>
+                <a href="?mode=class" class="btn" style="background: rgba(255,255,255,0.05);">Class Mode</a>
+            </div>
+
+            <!-- SCANNER MODE (Default) -->
+            <form method="POST" style="margin-bottom: 30px;">
+                <div class="form-group">
+                    <label>Student ID</label>
+                    <input type="text" name="student_id" placeholder="e.g. ST-001" autofocus autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary">✅ Mark Present</button>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" style="margin-top: 20px;">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </form>
+
+            <hr style="border-color: var(--glass-border); margin: 30px 0;">
+
+            <!-- CLASS MODE -->
+            <h3>📚 Class Attendance</h3>
+            <form method="GET" style="margin-bottom: 20px; display: flex; gap: 10px;">
+                <select name="class_filter" style="flex:1;" onchange="this.form.submit()">
+                    <option value="" disabled selected>Select Class to Load...</option>
+                    {% for c in classes %}
+                    <option value="{{ c }}" {% if class_filter==c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+                <noscript><button class="btn btn-secondary">Load</button></noscript>
+            </form>
+
+            {% if class_filter and class_students %}
+            <form method="POST">
+                <input type="hidden" name="bulk_action" value="true">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 0.9em; color: var(--text-secondary);">{{ class_students|length }}
+                        Students</span>
+                    <button type="button" onclick="selectAll()"
+                        style="background:none; border:none; color: var(--accent-teal); cursor: pointer;">Select
+                        All</button>
+                </div>
+
+                <div
+                    style="max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px;">
+                    {% for s in class_students %}
+                    <label
+                        style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" name="selected_students" value="{{ s.id }}" {% if not s.is_present
+                                %}checked{% else %}disabled{% endif %} style="width: 20px; height: 20px;">
+                            <div>
+                                <div style="font-weight: 500; color: {{ '#10b981' if s.is_present else 'white' }}">{{
+                                    s.name }}</div>
+                                <div style="font-size: 0.8em; color: var(--text-secondary);">{{ s.id }}</div>
+                            </div>
+                        </div>
+                        {% if s.is_present %}
+                        <span class="time-badge">Present</span>
+                        {% endif %}
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="btn btn-success" style="margin-top: 15px;">
+                    ✅ Mark Selected Present
+                </button>
+            </form>
+            {% elif class_filter %}
+            <p style="text-align: center; color: var(--text-secondary);">No students found in {{ class_filter }}.</p>
+            {% endif %}
+
+            <script>
+                function selectAll() {
+                    const boxes = document.getElementsByName('selected_students');
+                    for (let b of boxes) {
+                        if (!b.disabled) b.checked = true;
+                    }
+                }
+            </script>
+
+            <a href="/dashboard/{{ school_id }}" class="back-link">Back to Dashboard</a>
+        </div>
+
+        <!-- RIGHT: LOG -->
+        <div class="glass-panel">
+            <h3>📅 Today's Log</h3>
+            {% if todays_log %}
+            <div class="log-list">
+                {% for entry in todays_log %}
+                <div class="log-item">
+                    <div>
+                        <div style="font-weight: 600;">{{ entry.student_name }}</div>
+                        <div style="font-size: 0.8em; color: var(--text-secondary);">{{ entry.student_id }}</div>
+                    </div>
+                    <div class="time-badge">{{ entry.time }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="color: var(--text-secondary); text-align: center; padding: 20px;">No records for today yet.
+            </p>
+            {% endif %}
+        </div>
+
+    </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchoolSync - {{ stats.school_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-obsidian: #0f0f11;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --accent-teal: #06b6d4;
+            --accent-violet: #8b5cf6;
+            --accent-glow: 0 0 20px rgba(139, 92, 246, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-obsidian);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 260px 1fr 340px;
+            /* Bento Layout: Sidebar | Center | Right */
+            gap: 24px;
+            padding: 24px;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* --- GLASS CARD UTILITY --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            box-shadow: var(--accent-glow);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* --- LEFT SIDEBAR --- */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: calc(100vh - 48px);
+            position: sticky;
+            top: 24px;
+        }
+
+        .brand {
+            font-size: 1.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            padding-left: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 16px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* --- CENTER MODULE (COMMAND CENTER) --- */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            overflow-y: auto;
+            /* Hide scrollbar */
+            scrollbar-width: none;
+        }
+
+        .hero-header {
+            margin-bottom: 10px;
+        }
+
+        .hero-header h1 {
+            font-size: 1.8em;
+            letter-spacing: -1px;
+            font-weight: 600;
+        }
+
+        .grid-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .action-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 12px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+            border-color: var(--accent-violet);
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .action-card:hover::before {
+            opacity: 1;
+        }
+
+        .action-icon {
+            font-size: 2em;
+            z-index: 1;
+        }
+
+        .action-label {
+            font-size: 0.9em;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .badge {
+            background: #ef4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        /* Events Feed */
+        .events-list {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .event-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .event-date {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-teal);
+            font-size: 0.85em;
+        }
+
+        /* --- RIGHT MODULE (FINANCIALS / WIREFRAME) --- */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .stat-display {
+            position: relative;
+            padding: 30px;
+            border-radius: 24px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            /* Holo Effect */
+            box-shadow: inset 0 0 30px rgba(6, 182, 212, 0.05);
+        }
+
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            text-transform: uppercase;
+            font-size: 0.75em;
+            letter-spacing: 1.5px;
+            color: var(--accent-teal);
+        }
+
+        .progress-bar-glow {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-teal);
+            box-shadow: 0 0 10px var(--accent-teal);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1000px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                height: auto;
+                position: static;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LEFT SIDEBAR -->
+    <div class="glass-panel sidebar">
+        <div class="brand">SchoolSync</div>
+
+        <!-- Navigation -->
+        <a href="/" class="nav-item">
+            <span class="nav-icon">⬅️</span>
+            <span>Switch School</span>
+        </a>
+
+        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 10px 0;"></div>
+
+        <a href="#" class="nav-item active">
+            <span class="nav-icon">⌘</span>
+            <span>Dashboard</span>
+        </a>
+        <a href="/dashboard/{{ school_id }}/messages" class="nav-item">
+            <span class="nav-icon">💬</span>
+            <span>Messages</span>
+            {% if messages_count > 0 %} <span class="badge">{{ messages_count }}</span> {% endif %}
+        </a>
+        <a href="/dashboard/{{ school_id }}/students" class="nav-item">
+            <span class="nav-icon">🎓</span>
+            <span>Students</span>
+        </a>
+        <a href="/dashboard/{{ school_id }}/change-pin" class="nav-item">
+            <span class="nav-icon">🔐</span>
+            <span>Security</span>
+        </a>
+
+        <div style="flex-grow: 1;"></div>
+
+        <a href="/logout" class="nav-item" style="color: #ef4444;">
+            <span class="nav-icon">🚪</span>
+            <span>Secure Logout</span>
+        </a>
+    </div>
+
+    <!-- CENTER COMMAND CENTER -->
+    <div class="main-content">
+        <div class="hero-header">
+            <h1>Welcome, {{ stats.school_name }}</h1>
+            <p style="color: var(--text-secondary);">System Operational. All nodes active.</p>
+        </div>
+
+        <!-- Management Bento Grid -->
+        <div class="glass-panel">
+            <h3
+                style="margin-bottom: 20px; font-weight: 500; font-size: 0.9em; color: var(--text-secondary); text-transform: uppercase;">
+                Command Grid</h3>
+            <div class="grid-actions">
+                <a href="/dashboard/{{ school_id }}/broadcast" class="action-card">
+                    <span class="action-icon">📢</span>
+                    <span class="action-label">Broadcast</span>
+                </a>
+                <a href="/dashboard/{{ school_id }}/add-result" class="action-card">
+                    <span class="action-icon">📝</span>
+                    <span class="action-label">Add Result</span>
+                </a>
+                <a href="/dashboard/{{ school_id }}/attendance" class="action-card">
+                    <span class="action-icon">📍</span>
+                    <span class="action-label">Mark Arrival</span>
+                </a>
+                <a href="/dashboard/{{ school_id }}/add-student" class="action-card">
+                    <span class="action-icon">👤</span>
+                    <span class="action-label">Enroll</span>
+                </a>
+                <a href="/dashboard/{{ school_id }}/import-students" class="action-card">
+                    <span class="action-icon">📥</span>
+                    <span class="action-label">Import Students</span>
+                </a>
+                <a href="/dashboard/{{ school_id }}/bill-class" class="action-card">
+                    <span class="action-icon">💰</span>
+                    <span class="action-label">Bill Class</span>
+                </a>
+                <a href="/dashboard/{{ school_id }}/add-event" class="action-card">
+                    <span class="action-icon">📅</span>
+                    <span class="action-label">Add Event</span>
+                </a>
+                <a href="/dashboard/{{ school_id }}/upload-results" class="action-card">
+                    <span class="action-icon">📤</span>
+                    <span class="action-label">Upload Results</span>
+                </a>
+                <a href="/dashboard/{{ school_id }}/export" class="action-card"
+                    style="border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.01);">
+                    <span class="action-icon">📊</span>
+                    <span class="action-label">Export Data</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Class Distribution -->
+        {% if stats.class_breakdown %}
+        <div class="glass-panel">
+            <h3
+                style="margin-bottom: 15px; font-weight: 500; font-size: 0.9em; color: var(--text-secondary); text-transform: uppercase;">
+                Enrollment Overview
+            </h3>
+            <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin;">
+                {% for cls, count in stats.class_breakdown.items() %}
+                <div
+                    style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 18px; border-radius: 12px; text-align: center; min-width: 90px;">
+                    <div style="font-size: 0.8em; color: var(--accent-teal); margin-bottom: 4px;">{{ cls }}</div>
+                    <div style="font-weight: 600; font-size: 1.1em;">{{ count }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Events Stream -->
+        <div class="glass-panel" style="flex: 1;">
+            <h3
+                style="margin-bottom: 20px; font-weight: 500; font-size: 0.9em; color: var(--text-secondary); text-transform: uppercase;">
+                Timeline</h3>
+            {% if events %}
+            <div class="events-list">
+                {% for event in events %}
+                <div class="event-row">
+                    <div>
+                        <div style="font-weight: 600;">{{ event.title }}</div>
+                        <div style="color: var(--text-secondary); font-size: 0.8em; margin-top: 4px;">{{ event.time }} •
+                            {{ event.type }}</div>
+                    </div>
+                    <div class="event-date">{{ event.date }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; color: var(--text-secondary); padding: 40px;">No active events in timeline.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- RIGHT FINANCIAL MODULE -->
+    <div class="right-panel">
+
+        <!-- Revenue Hologram -->
+        <a href="/dashboard/{{ school_id }}/payments" class="stat-display">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="stat-label">Financial Overview</div>
+                <button onclick="togglePrivacy(event)"
+                    style="background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 2px;">
+                    <span id="eye-icon">👁️</span>
+                </button>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <div
+                    style="display:flex; justify-content:space-between; font-size:0.85em; color:var(--text-secondary); margin-bottom: 4px;">
+                    <span>Total Expected</span>
+                    <span class="privacy-blur" style="color:white; font-weight:600;">₦{{ stats.total_fees }}</span>
+                </div>
+                <div
+                    style="display:flex; justify-content:space-between; font-size:0.85em; color:var(--text-secondary);">
+                    <span>Total Collected</span>
+                    <span class="privacy-blur" style="color:var(--accent-teal); font-weight:600;">₦{{
+                        stats.total_revenue }}</span>
+                </div>
+            </div>
+
+            <div class="progress-bar-glow" style="margin-top: 12px; height: 8px;">
+                <div class="progress-fill" style="width: {{ stats.collection_rate }}%;"></div>
+            </div>
+            <div style="text-align: right; margin-top: 6px; font-size: 0.8em; color: var(--accent-teal);">
+                {{ stats.collection_rate }}% Recovered
+            </div>
+        </a>
+
+        <!-- Outstanding -->
+        <a href="/dashboard/{{ school_id }}/debtors" class="stat-display" style="border-color: rgba(239, 68, 68, 0.2);">
+            <div class="stat-label" style="color: #ef4444;">Outstanding</div>
+            <div class="stat-value privacy-blur"
+                style="background: linear-gradient(90deg, #fff, #fca5a5); -webkit-background-clip: text;">₦{{
+                stats.total_outstanding }}</div>
+            <div style="font-size: 0.8em; color: var(--text-secondary);">Unrecovered Assets</div>
+        </a>
+
+        <script>
+            function togglePrivacy(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const blurred = document.querySelectorAll('.privacy-blur');
+                const btn = document.getElementById('eye-icon');
+
+                let isBlur = btn.innerText === '👁️';
+
+                if (isBlur) {
+                    // Unblur
+                    blurred.forEach(el => el.style.filter = 'none');
+                    btn.innerText = '🔒';
+                } else {
+                    // Blur
+                    blurred.forEach(el => el.style.filter = 'blur(8px)');
+                    btn.innerText = '👁️';
+                }
+            }
+            // Init Blur
+            document.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll('.privacy-blur').forEach(el => el.style.filter = 'blur(8px)');
+            });
+        </script>
+
+        <!-- Debtors Count -->
+        <a href="/dashboard/{{ school_id }}/debtors" class="glass-panel"
+            style="align-items: center; text-align: center;">
+            <div style="font-size: 3em;">⚠️</div>
+            <div style="font-size: 1.5em; font-weight: 700;">{{ stats.total_debtors }}</div>
+            <div style="color: var(--text-secondary); font-size: 0.8em;">At-Risk Students</div>
+        </a>
+
+        <!-- Student Count -->
+        <a href="/dashboard/{{ school_id }}/students" class="glass-panel"
+            style="align-items: center; text-align: center;">
+            <div style="font-size: 3em;">👥</div>
+            <div style="font-size: 1.5em; font-weight: 700;">{{ stats.total_students }}</div>
+            <div style="color: var(--text-secondary); font-size: 0.8em;">Total Enrollment</div>
+        </a>
+
+    </div>
+
+</body>
+
+</html>

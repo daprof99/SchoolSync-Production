@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Students - {{ school_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+
+<body>
+    <div class="center-screen">
+        <div class="container-narrow">
+            <div class="glass-panel">
+                <center>
+                    <h1>📥 Bulk Import</h1>
+                    <p class="subtitle">Upload Students via Excel or CSV</p>
+                </center>
+
+                <div class="alert alert-success">
+                    <strong>Format:</strong> Excel (.xlsx) or CSV<br>
+                    <strong>Columns:</strong> ID, Surname, First Name, Other Name, Class, Parent Phone, Total Fees<br>
+                    <small>Example: ST001, Doe, John, P., JSS1, 08012345678, 50000</small>
+
+                    <div style="margin-top: 15px;">
+                        <a href="{{ url_for('download_template', school_id=school_id) }}" class="btn btn-warning"
+                            style="display: inline-flex; width: auto; padding: 10px 20px; font-size: 0.9em;">
+                            📥 Download Excel Template
+                        </a>
+                    </div>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Select File</label>
+                        <input type="file" name="file" accept=".csv, .xlsx, .xls" required
+                            style="padding-bottom: 40px;">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        🚀 Upload & Register
+                    </button>
+
+                    <a href="/dashboard/{{ school_id }}" class="back-link">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

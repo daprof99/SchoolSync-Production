@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Card - {{ student.id }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #e2e8f0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .report-card {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .report-card {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                height: auto;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #1e293b;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .school-name {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #1e293b;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.2em;
+            margin-top: 5px;
+        }
+
+        .student-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .info-group {
+            margin-bottom: 5px;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #64748b;
+            width: 100px;
+            display: inline-block;
+        }
+
+        .value {
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        th,
+        td {
+            border: 1px solid #cbd5e1;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: #1e293b;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .grade-box {
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            min-width: 100px;
+        }
+
+        .grade-box .big {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .grade-box .caps {
+            font-size: 0.8em;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #94a3b8;
+        }
+
+        .download-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2563eb;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+            font-size: 1.1em;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <button onclick="window.print()" class="download-btn no-print">
+        💾 Download PDF
+    </button>
+
+    <div class="report-card">
+        <div class="header">
+            <div class="school-name">{{ school_name }}</div>
+            <div class="subtitle">Student Assessment Report</div>
+        </div>
+
+        <div class="student-info">
+            <div>
+                <div class="info-group">
+                    <span class="label">Name:</span>
+                    <span class="value">{{ student.parent_name }}</span>
+                    <!-- Showing Parent Name as proxy if student name not separate -->
+                </div>
+                <div class="info-group">
+                    <span class="label">ID:</span>
+                    <span class="value">{{ student.id }}</span>
+                </div>
+            </div>
+            <div>
+                <div class="info-group">
+                    <span class="label">Class:</span>
+                    <span class="value">{{ student.student_class }}</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Date:</span>
+                    <span class="value">
+                        <script>document.write(new Date().toLocaleDateString())</script>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Term</th>
+                    <th>Session</th>
+                    <th>Grade</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in results %}
+                <tr>
+                    <td>{{ r.subject }}</td>
+                    <td>{{ r.term }}</td>
+                    <td>{{ r.session }}</td>
+                    <td style="font-weight:bold; color: {{ '#166534' if r.grade == 'A' else '#1e293b' }}">{{ r.grade }}
+                    </td>
+                    <td>{{ r.score }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="summary">
+            <div class="grade-box">
+                <div class="big">{{ results|length }}</div>
+                <div class="caps">Subject Count</div>
+            </div>
+            <div class="grade-box">
+                <div class="big">{{ average }}%</div>
+                <div class="caps">Average Score</div>
+            </div>
+            <div class="grade-box">
+                <div class="big" style="color: #ef4444;">{{ student.total_fees - student.amount_paid }}</div>
+                <div class="caps">Outstanding Fees (₦)</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Generated by SchoolSync • {{ school_name }} • Official Document
+        </div>
+    </div>
+
+</body>
+
+</html>

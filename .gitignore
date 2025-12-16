@@ -1,0 +1,11 @@
+.env
+google_credentials.json
+__pycache__/
+*.pyc
+.idea/
+.venv/
+.DS_Store
+instance/
+storage.json
+ngrok.exe
+static/uploads/

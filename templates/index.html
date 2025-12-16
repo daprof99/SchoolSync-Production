@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchoolSync - Admin Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+
+<body>
+    <div class="center-screen">
+        <div class="container-narrow">
+            <div class="glass-panel" style="text-align: center;">
+                <h1>SchoolSync</h1>
+                <p class="subtitle">Admin Portal Access</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form action="/find-school" method="POST" style="text-align: left;">
+                    <div class="form-group">
+                        <label>Admin Phone Number</label>
+                        <input type="tel" name="phone" placeholder="e.g. 08012345678" required autofocus>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        🚀 Continue to Dashboard
+                    </button>
+
+                    <div style="margin-top: 30px; border-top: 1px solid var(--glass-border); padding-top: 20px;">
+                        <a href="/superadmin"
+                            style="font-size: 0.8em; color: var(--text-secondary); opacity: 0.5;">Super Admin Access</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
