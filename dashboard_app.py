@@ -25,6 +25,10 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-key')
 
 url: str = os.getenv("SUPABASE_URL")
 key: str = os.getenv("SUPABASE_KEY")
+
+if not url or not key:
+    raise ValueError("❌ CRITICAL ERROR: SUPABASE_URL and SUPABASE_KEY must be set in Environment Variables. Deployment failed.")
+
 supabase: Client = create_client(url, key)
 
 # --- CONFIG HELPER ---
